@@ -1,16 +1,16 @@
 import streamlit as st
 import os
 from dotenv import load_dotenv
-from google import genai
+from groq import Groq
 import smtplib
 from email.message import EmailMessage
 
 
-load_dotenv()
+load_dotenv(override=True)
 
-api_key=os.getenv("GOOGLE_API_KEY")
+api_key=os.getenv("GROQ_API_KEY")
 
-client = genai.Client(api_key=api_key)
+client = Groq(api_key=api_key)
 
 def send_email(to_emails,subject,body,reply_to=None, name=None):
     email=os.getenv("SENDER_EMAIL")
@@ -56,7 +56,7 @@ if file is not None:
 
 def gen_summury(transcript):
     """
-    this generates summary using gemini model
+    this generates summary using groq model
     """
     prompt = f"""
 You are a professional meeting assistant. Given the following meeting transcript, generate a clean and easy-to-read plain-text summary and list of action items.
@@ -82,10 +82,11 @@ Transcript:
 {transcript}
 """
     try:
-        response=client.models.generate_content(
-            model="gemini-2.0-flash", contents=prompt
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[{"role": "user", "content": prompt}],
         )
-        return response.text
+        return response.choices[0].message.content
     except Exception as e:
         st.error(f"Failed to generate summary: {e}")
         return ""
@@ -113,10 +114,11 @@ Summary to evaluate:
 {summary}
     """
     try:
-        response=client.models.generate_content(
-            model="gemini-2.0-flash", contents=eval_prompt
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[{"role": "user", "content": eval_prompt}],
         )
-        feedback=response.text.strip()
+        feedback = response.choices[0].message.content.strip()
         return feedback
     except Exception as e:
         st.error(f"Failed to evaluate summary: {e}")
