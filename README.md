@@ -1,22 +1,80 @@
-Recaply 🤖📝 AI-Powered Meeting Summarizer & Action Tracker
+# Recaply 🤖📝
+### AI-Powered Meeting Summarizer & Action Item Tracker
 
-Turn messy meeting transcripts into clear summaries and actionable next steps — instantly.
+Recaply is an intelligent assistant that transforms messy, unstructured meeting transcripts into clean, structured summaries and actionable next steps—instantly. Whether you are a student coordinating group projects or a professional tracking team alignments, Recaply helps you skip manual note-taking and focus on execution.
 
-Recaply is your smart AI assistant that understands conversations, extracts what matters, and organizes it into structured insights. Whether you're a student or a professional, Recaply helps you skip manual note-taking and focus on what actually matters.
+---
 
-🚀 What Recaply Does Converts long, unstructured meeting notes into concise summaries Identifies key decisions, action items, and deadlines Helps teams stay aligned and accountable with shareable outputs ✨ Key Features
+## 🌟 Key Features
 
-🧠 Smart Summarization Automatically extracts important discussion points, decisions, and deadlines using advanced AI.
+1. **Smart Summarization**: Automatically distills key discussion points and decisions.
+2. **Action Item Tracking**: Extracts tasks, assignees, deadlines, and priorities from the transcript.
+3. **Agentic Self-Correction Loop**: Uses an iterative AI review process to self-correct and verify summary quality before displaying it.
+4. **Seamless Sharing**: Download the summary directly as a text file or email it to your team in one click.
 
-🔁 Self-Improving Intelligence Built with iterative feedback loops that refine summaries for higher accuracy and clarity.
+---
 
-📤 One-Click Sharing Easily send summaries via email with assigned tasks and due dates.
+## ⚙️ How It Works (The Agentic Loop)
 
-💡 Simple & Clean Interface Paste your meeting transcript or upload a file—Recaply handles the rest.
+Recaply is built on an **Agentic Feedback Loop** using the Groq API (`llama-3.3-70b-versatile` model):
 
-🛠️ How It Works Paste your meeting transcript or upload a file Click “Generate Summary” Get structured insights with action items Share results instantly with your team ⚙️ Tech Behind Recaply Backend: Python + Google Gemini API Frontend: Streamlit Email Integration: SMTP (SSL-enabled) 🎯 Who Is It For? Students managing group discussions Team leads tracking meeting outcomes Professionals who want productivity without manual effort
+```mermaid
+graph TD
+    A[User inputs transcript] --> B[Summarizer Agent drafts summary]
+    B --> C[Reviewer Agent evaluates draft]
+    C -->|Fails checks| D[Feedback sent back to Summarizer]
+    D -->|Up to 3 attempts| B
+    C -->|Passes checks / Max tries| E[Display final summary to user]
+    E --> F[Download or Email Summary]
+```
 
-🚀 Quick Setup
-Prerequisites
-Python 3.10+
-Google Gemini API key (Get it here)
+*   **Step 1**: The *Summarizer Agent* generates an initial summary and structured action items.
+*   **Step 2**: The *Reviewer Agent* inspects the summary against key criteria (Is it clean plain text? Are there assignees, deadlines, and priorities for action items? Does it contain both a summary and action list?).
+*   **Step 3**: If the review **passes**, the summary is shown. If it **fails**, the feedback is piped back into the summarizer to regenerate a higher-quality draft (up to 3 times).
+
+---
+
+## 🛠️ Technology Stack
+
+*   **Frontend**: Streamlit (Python web framework)
+*   **AI Engine**: Groq API (`llama-3.3-70b-versatile`)
+*   **Email Sharing**: Python's `smtplib` connected via Gmail SMTP (SSL-secured)
+
+---
+
+## 🚀 Quick Setup Guide
+
+### 1. Prerequisites
+Make sure you have:
+*   Python 3.10+ installed on your computer.
+*   A Groq API Key (get it from the [Groq Console](https://console.groq.com/)).
+*   A Gmail account with an **App Password** configured (required to send automated emails).
+
+### 2. Installation
+Clone or navigate to the directory and install dependencies:
+```bash
+# Activate your virtual environment (if using one)
+.venv\Scripts\activate
+
+# Install required libraries
+pip install -r requirements.txt
+```
+
+### 3. Environment Configuration
+Create/edit the `.env` file in the project folder and configure the following variables:
+```env
+# Your Groq API Key
+GROQ_API_KEY=gsk_your_groq_key_here
+
+# Gmail credentials for sending summaries
+SENDER_EMAIL=your_gmail_username@gmail.com
+SENDER_PASSWORD=your_16_character_app_password
+```
+*(Note: Do not use your regular Gmail password for `SENDER_PASSWORD`. Generate a 16-character **App Password** in your Google Account Security settings under 2-Step Verification).*
+
+### 4. Run the Application
+Start the Streamlit application by running:
+```bash
+streamlit run app.py
+```
+Open the local URL displayed in your terminal (usually `http://localhost:8501`) to start using Recaply!
